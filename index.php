@@ -2,10 +2,11 @@
 /**
  * Backend Wizards - Stage 0 Task
  * Dynamic Profile Endpoint with Cat Facts Integration
- *
+ * 
  * @author Ukaoha Chizoba
  * @email ukaohachizoba6@gmail.com
  */
+
 
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, OPTIONS');
@@ -43,15 +44,15 @@ function getProfile() {
     $email = "ukaohachizoba6@gmail.com";
     $name = "Ukaoha Chizoba";
     $stack = "PHP";
-
+    
     // Generate current timestamp in ISO 8601 UTC format with milliseconds
-    $now = DateTime::createFromFormat('U.u', microtime(true));
-    $timestamp = $now->format('Y-m-d\TH:i:s.v\Z');
-
+    $microtime = microtime(true);
+    $timestamp = gmdate('Y-m-d\TH:i:s', (int)$microtime) . '.' . sprintf('%03d', ($microtime - floor($microtime)) * 1000) . 'Z';
+    
     // Fetch a fresh cat fact from external API
     $fact = fetchCatFact();
+    
 
-    // Build response according to required schema
     $response = [
         "status" => "success",
         "user" => [
@@ -62,7 +63,7 @@ function getProfile() {
         "timestamp" => $timestamp,
         "fact" => $fact
     ];
-
+    
     // Return JSON response with 200 OK status
     http_response_code(200);
     echo json_encode($response, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
@@ -70,12 +71,12 @@ function getProfile() {
 
 /**
  * Fetch a random cat fact from external API
- *
- * @return string 
+ * 
+ * @return string Cat fact or fallback message
  */
 function fetchCatFact() {
     $url = 'https://catfact.ninja/fact';
-
+    
 
     $context = stream_context_create([
         'http' => [
@@ -85,24 +86,25 @@ function fetchCatFact() {
                        "Accept: application/json\r\n"
         ]
     ]);
-
+    
 
     $response = @file_get_contents($url, false, $context);
-
+    
     // Handle failed request
     if ($response === false) {
         error_log("Failed to fetch cat fact from API");
         return "Unable to fetch cat fact at this time. Please try again later.";
     }
-
+    
+    // Parse JSON response
     $data = json_decode($response, true);
-
-
+    
+    // Validate response structure
     if (json_last_error() !== JSON_ERROR_NONE || !isset($data['fact'])) {
         error_log("Invalid JSON response from cat facts API");
         return "Unable to fetch cat fact at this time. Please try again later.";
     }
-
+    
     return $data['fact'];
 }
 ?>
