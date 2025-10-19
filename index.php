@@ -43,7 +43,7 @@ function getProfile() {
     // User information
     $email = "ukaohachizoba6@gmail.com";
     $name = "Ukaoha Chizoba";
-    $stack = "PHP";
+    $stack = "PHP/Laravel";
     
     // Generate current timestamp in ISO 8601 UTC format
     $timestamp = gmdate('Y-m-d\TH:i:s.v\Z');
