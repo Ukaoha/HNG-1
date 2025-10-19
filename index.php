@@ -7,7 +7,7 @@
  * @email ukaohachizoba6@gmail.com
  */
 
-
+// Set headers
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
@@ -19,12 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit();
 }
 
-
+// Get the path
 $path = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
-$path = rtrim($path, '/'); 
+$path = rtrim($path, '/');
 
 // Route handler
-if ($_SERVER['REQUEST_METHOD'] === 'GET' && $path === '/me') {
+if ($_SERVER['REQUEST_METHOD'] === 'GET' && ($path === '/me' || $path === '')) {
     getProfile();
     exit();
 } else {
@@ -40,19 +40,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' && $path === '/me') {
  * Get user profile with dynamic timestamp and cat fact
  */
 function getProfile() {
-    // User information (hardcoded as per requirements)
+    // User information
     $email = "ukaohachizoba6@gmail.com";
     $name = "Ukaoha Chizoba";
     $stack = "PHP";
     
-    // Generate current timestamp in ISO 8601 UTC format with milliseconds
-    $microtime = microtime(true);
-    $timestamp = gmdate('Y-m-d\TH:i:s', (int)$microtime) . '.' . sprintf('%03d', ($microtime - floor($microtime)) * 1000) . 'Z';
+    // Generate current timestamp in ISO 8601 UTC format
+    $timestamp = gmdate('Y-m-d\TH:i:s.v\Z');
     
     // Fetch a fresh cat fact from external API
     $fact = fetchCatFact();
     
-
+    // Build response
     $response = [
         "status" => "success",
         "user" => [
@@ -77,23 +76,23 @@ function getProfile() {
 function fetchCatFact() {
     $url = 'https://catfact.ninja/fact';
     
-
+    // Configure stream context with timeout
     $context = stream_context_create([
         'http' => [
-            'timeout' => 10, 
+            'timeout' => 5,
             'method' => 'GET',
             'header' => "User-Agent: PHP-Backend-Wizards/1.0\r\n" .
                        "Accept: application/json\r\n"
         ]
     ]);
     
-
+    // Attempt to fetch cat fact
     $response = @file_get_contents($url, false, $context);
     
     // Handle failed request
     if ($response === false) {
         error_log("Failed to fetch cat fact from API");
-        return "Unable to fetch cat fact at this time. Please try again later.";
+        return "Cats are amazing creatures!";
     }
     
     // Parse JSON response
@@ -102,7 +101,7 @@ function fetchCatFact() {
     // Validate response structure
     if (json_last_error() !== JSON_ERROR_NONE || !isset($data['fact'])) {
         error_log("Invalid JSON response from cat facts API");
-        return "Unable to fetch cat fact at this time. Please try again later.";
+        return "Cats are amazing creatures!";
     }
     
     return $data['fact'];
