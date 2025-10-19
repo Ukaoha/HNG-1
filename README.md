@@ -98,7 +98,6 @@ for i in {1..3}; do curl -s http://localhost:8000/me | jq '.timestamp'; sleep 1;
 
 - Built with pure PHP (no frameworks)
 - Uses `file_get_contents()` for HTTP requests with timeout
-- User data stored in JSON file (`users.json`)
 - Cat facts fetched from external API with error handling
 - ISO 8601 timestamp generation using `gmdate()`
 
