@@ -10,7 +10,7 @@ This project implements a dynamic profile endpoint that returns user information
 
 1. Clone the repository:
    ```bash
-   git clone <your-repo-url>
+   git clone <https://github.com/Ukaoha/HNG-1>
    cd <your-repo-directory>
    ```
 
